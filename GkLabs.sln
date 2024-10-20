@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GkLabs-Lab1", "GkLabs-Lab1\GkLabs-Lab1.csproj", "{B8EDF25B-9190-4BED-8B0E-5605C11AE52E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkNg", "SilkNg\SilkNg.csproj", "{A22B18F9-1F34-4DC1-AEBE-7DB91B861F26}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8EDF25B-9190-4BED-8B0E-5605C11AE52E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8EDF25B-9190-4BED-8B0E-5605C11AE52E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8EDF25B-9190-4BED-8B0E-5605C11AE52E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8EDF25B-9190-4BED-8B0E-5605C11AE52E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A22B18F9-1F34-4DC1-AEBE-7DB91B861F26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A22B18F9-1F34-4DC1-AEBE-7DB91B861F26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A22B18F9-1F34-4DC1-AEBE-7DB91B861F26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A22B18F9-1F34-4DC1-AEBE-7DB91B861F26}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
