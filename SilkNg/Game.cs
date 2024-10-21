@@ -29,10 +29,55 @@ public class Game {
     private static void OnRender(double dt) {
         _gl.Clear(ClearBufferMask.ColorBufferBit);
 
-        var randColor = Color.FromArgb(Random.Shared.Next(0, 255), Random.Shared.Next(0, 255),
-            Random.Shared.Next(0, 255));
-        
-        DrawRectangle(new(-400.0f, -300.0f), new(80.0f, 60.0f), randColor, 0.5f);
+        // DrawRectangle(new(_window.Size.X / 3f, -_window.Size.Y / 3f),
+        //     new(_window.Size.X / 3f, _window.Size.Y / 3f),
+        //     Color.Coral);
+        //
+        // #region second fractal iteration
+        //
+        // DrawRectangle(new(_window.Size.X / 9f, -_window.Size.Y / 9f),
+        //     new(_window.Size.X / 9f, _window.Size.Y / 9f),
+        //     Color.Coral);
+        //
+        // DrawRectangle(new(4f * _window.Size.X / 9f, -_window.Size.Y / 9f),
+        //     new(_window.Size.X / 9f, _window.Size.Y / 9f),
+        //     Color.Coral);
+        //
+        // DrawRectangle(new(7f * _window.Size.X / 9f, -_window.Size.Y / 9f),
+        //     new(_window.Size.X / 9f, _window.Size.Y / 9f),
+        //     Color.Coral);
+        //
+        // DrawRectangle(new(_window.Size.X / 9f, -4f * _window.Size.Y / 9f),
+        //     new(_window.Size.X / 9f, _window.Size.Y / 9f),
+        //     Color.Coral);
+        //
+        // DrawRectangle(new(4f * _window.Size.X / 9f, -4f * _window.Size.Y / 9f),
+        //     new(_window.Size.X / 9f, _window.Size.Y / 9f),
+        //     Color.Coral);
+        //
+        // DrawRectangle(new(7f * _window.Size.X / 9f, -4f * _window.Size.Y / 9f),
+        //     new(_window.Size.X / 9f, _window.Size.Y / 9f),
+        //     Color.Coral);
+        //
+        // DrawRectangle(new(_window.Size.X / 9f, -7f * _window.Size.Y / 9f),
+        //     new(_window.Size.X / 9f, _window.Size.Y / 9f),
+        //     Color.Coral);
+        //
+        // DrawRectangle(new(4f * _window.Size.X / 9f, -7f * _window.Size.Y / 9f),
+        //     new(_window.Size.X / 9f, _window.Size.Y / 9f),
+        //     Color.Coral);
+        //
+        // DrawRectangle(new(7f * _window.Size.X / 9f, -7f * _window.Size.Y / 9f),
+        //     new(_window.Size.X / 9f, _window.Size.Y / 9f),
+        //     Color.Coral);
+        //
+        //
+        // DrawRectangle(new(_window.Size.X / 27f, -_window.Size.Y / 27f),
+        //     new(_window.Size.X / 27f, _window.Size.Y / 27f),
+        //     Color.Coral);
+        // #endregion
+
+        DrawFractal();
         
         // DrawTriangle();
     }
@@ -48,7 +93,7 @@ public class Game {
             -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f
         };
 
-        var vbo = _gl.GenBuffer(); 
+        var vbo = _gl.GenBuffer();
         _gl.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
 
         fixed (float* buf = vertices) {
@@ -59,10 +104,10 @@ public class Game {
         var indices = new uint[] {
             0, 1, 2
         };
-        
+
         var ebo = _gl.GenBuffer();
         _gl.BindBuffer(BufferTargetARB.ElementArrayBuffer, ebo);
-        
+
         fixed (uint* buf = indices) {
             _gl.BufferData(BufferTargetARB.ElementArrayBuffer, (nuint)(indices.Length * sizeof(uint)), buf,
                 BufferUsageARB.StaticDraw);
@@ -93,7 +138,7 @@ public class Game {
                                       out_color = vec4(frag_position.x, frag_position.y, frag_position.z, 1.0);
                                     }
                                     """;
-        
+
         var vertexShader = _gl.CreateShader(ShaderType.VertexShader);
         _gl.ShaderSource(vertexShader, vertexCode);
 
@@ -115,7 +160,7 @@ public class Game {
         if (fStatus != (int)GLEnum.True) {
             throw new("Error compiling fragment shader");
         }
-        
+
         var program = _gl.CreateProgram();
 
         _gl.AttachShader(program, vertexShader);
@@ -135,7 +180,7 @@ public class Game {
 
         const uint positionLoc = 0;
         _gl.EnableVertexAttribArray(positionLoc);
-        _gl.VertexAttribPointer(positionLoc, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 
+        _gl.VertexAttribPointer(positionLoc, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float),
             (void*)0);
 
         const uint colorLoc = 1;
@@ -159,16 +204,38 @@ public class Game {
         _gl.BindVertexArray(vao);
 
         // Create a rectangle vertex array
+        // var vertices = new[] {
+        //     position.X / _window.Size.X * (2.0f - deform), position.Y / _window.Size.Y * (2.0f), 0.0f, // p1p
+        //     color.R / 256.0f, color.G / 256.0f, color.B / 256.0f, // p1c
+        //     (position.X + size.X) / _window.Size.X * (2.0f - deform), position.Y / _window.Size.Y * (2.0f - deform),
+        //     0.0f, // p1p
+        //     color.R / 256.0f, color.G / 256.0f, color.B / 256.0f, // p1c
+        //     (position.X + size.X) / _window.Size.X * (2.0f), (position.Y + size.Y) / _window.Size.Y * (2.0f - deform),
+        //     0.0f, // p1p
+        //     color.R / 256.0f, color.G / 256.0f, color.B / 256.0f, // p1c
+        //     position.X / _window.Size.X * (2.0f), (position.Y + size.Y) / _window.Size.Y * (2.0f - deform), 0.0f, // p1p
+        //     color.R / 256.0f, color.G / 256.0f, color.B / 256.0f, // p1c
+        // };
+
         var vertices = new[] {
-            position.X / _window.Size.X * (2.0f - deform), position.Y / _window.Size.Y * (2.0f), 0.0f, // p1p
+            2f * position.X / _window.Size.X /*- 2f * size.X / _window.Size.X*/ - 1f,
+            2f * position.Y / _window.Size.Y /*+ 2f * size.Y / _window.Size.Y*/ + 1f,
+            0f, // p1p
             color.R / 256.0f, color.G / 256.0f, color.B / 256.0f, // p1c
-            (position.X + size.X) / _window.Size.X * (2.0f - deform), position.Y / _window.Size.Y * (2.0f - deform),
-            0.0f, // p1p
+
+            2f * position.X / _window.Size.X + 2f * size.X / _window.Size.X - 1f,
+            2f * position.Y / _window.Size.Y /*+ 2f * size.Y / _window.Size.Y*/ + 1f,
+            0f, // p1p
             color.R / 256.0f, color.G / 256.0f, color.B / 256.0f, // p1c
-            (position.X + size.X) / _window.Size.X * (2.0f), (position.Y + size.Y) / _window.Size.Y * (2.0f - deform),
-            0.0f, // p1p
+
+            2f * position.X / _window.Size.X + 2f * size.X / _window.Size.X - 1f,
+            2f * position.Y / _window.Size.Y - 2f * size.Y / _window.Size.Y + 1f,
+            0f, // p1p
             color.R / 256.0f, color.G / 256.0f, color.B / 256.0f, // p1c
-            position.X / _window.Size.X * (2.0f), (position.Y + size.Y) / _window.Size.Y * (2.0f - deform), 0.0f, // p1p
+
+            2f * position.X / _window.Size.X /*- 2f * size.X / _window.Size.X*/ - 1f,
+            2f * position.Y / _window.Size.Y - 2f * size.Y / _window.Size.Y + 1f,
+            0f, // p1p
             color.R / 256.0f, color.G / 256.0f, color.B / 256.0f, // p1c
         };
 
@@ -274,5 +341,25 @@ public class Game {
         _gl.BindVertexArray(vao);
         _gl.UseProgram(program);
         _gl.DrawElements(PrimitiveType.Triangles, 6, DrawElementsType.UnsignedInt, (void*)0);
+    }
+
+    private static void DrawFractal(int n = 3) {
+        for (var i = 1; i <= n; ++i) {
+            for (var j = 1; j <= float.Pow(3, i) / 3; ++j) {
+                for (var k = 1; k <= float.Pow(3, i) / 3; ++k) {
+                    var posX = k * 3f - 2f;
+                    var posY = j * 3f - 2f;
+
+                    var scale = float.Pow(3f, i);
+                    
+                    var randColor = Color.FromArgb(Random.Shared.Next(0, 255), Random.Shared.Next(0, 255),
+                        Random.Shared.Next(0, 255));
+                    
+                    DrawRectangle(new(posX * _window.Size.X / scale, -posY * _window.Size.Y / scale),
+                        new(_window.Size.X / scale, _window.Size.Y / scale),
+                        randColor);
+                }
+            }
+        }
     }
 }
